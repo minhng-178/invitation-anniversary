@@ -1,0 +1,16 @@
+/* Progressive enhancement: no selector here conceals pending content. */
+.invitation-reveal-active {
+  will-change: opacity, translate, scale;
+}
+
+.invitation-press-active {
+  will-change: scale;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .invitation-reveal-active,
+  .invitation-press-active {
+    will-change: auto;
+  }
+}

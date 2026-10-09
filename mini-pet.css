@@ -1,0 +1,24 @@
+/* A separate companion layer: scrolling remains available everywhere else. */
+.mini-pet{--pet-safe-bottom:env(safe-area-inset-bottom,0px);position:fixed;left:0;top:0;right:auto;bottom:auto;--pet-size:96px;--pet-frame-height:calc(var(--pet-size) * 13 / 12);width:var(--pet-size);z-index:50;pointer-events:none;user-select:none;-webkit-user-select:none;isolation:isolate;filter:drop-shadow(0 4px 5px #76513b14);will-change:auto}
+.mini-pet[data-state="running"],.mini-pet[data-state="dragging"]{will-change:transform}
+.mini-pet[hidden],.mini-pet-restore[hidden],.mini-pet-bubble[hidden]{display:none!important}
+.mini-pet .mini-pet-body{position:relative;display:block;width:100%;height:auto;min-height:44px;aspect-ratio:auto;padding:16px 0 0;background:none;border:0;border-radius:40%;cursor:grab;touch-action:none;pointer-events:auto;transition:none}
+.mini-pet .mini-pet-body:hover{filter:none}
+.mini-pet[data-state="dragging"] .mini-pet-body{cursor:grabbing}
+.mini-pet .mini-pet-body:focus-visible{outline:3px solid var(--rose,#9e405b);outline-offset:0}
+/* Use each original frame directly; the left/right rows already face correctly. */
+.mini-pet .cappy-poster{display:block;width:100%;height:var(--pet-frame-height);object-fit:contain;image-rendering:pixelated;pointer-events:none}
+.mini-pet .cappy-sprite{position:absolute;left:0;top:16px;display:block;width:var(--pet-size);height:var(--pet-frame-height);background-image:url("./assets/cappy/spritesheet.webp");background-repeat:no-repeat;background-size:calc(var(--pet-size) * 8) calc(var(--pet-frame-height) * 9);background-position:calc(var(--sprite-column,0) * var(--pet-size) * -1) calc(var(--sprite-row,0) * var(--pet-frame-height) * -1);image-rendering:pixelated;pointer-events:none;opacity:0;animation:cappy-frames var(--sprite-duration,2600ms) steps(var(--sprite-frames,6),end) infinite}
+.mini-pet-body[data-sprite-ready="true"] .cappy-sprite{opacity:1}
+.mini-pet-body[data-sprite-ready="true"] .cappy-poster{visibility:hidden}
+.cappy-sprite[data-animation="waving"]{animation-name:cappy-wave;animation-iteration-count:1}
+.mini-pet .cappy-sprite[data-static="true"]{animation:none}
+@keyframes cappy-frames{from{background-position-x:0}to{background-position-x:calc(var(--sprite-frames) * var(--pet-size) * -1)}}
+@keyframes cappy-wave{from{background-position-x:0}to{background-position-x:calc(var(--sprite-frames) * var(--pet-size) * -1)}}
+.mini-pet .mini-pet-hide{position:absolute;top:0;right:0;left:auto;bottom:auto;z-index:2;display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:none;color:var(--rose,#9e405b);font-size:20px;line-height:1;pointer-events:auto;cursor:pointer;touch-action:manipulation}
+.mini-pet-hide:before{content:"";position:absolute;inset:10px;border:1px solid var(--line,#e5cbd2);border-radius:50%;background:#fffdf8ed;z-index:-1}
+.mini-pet-hide:hover:before{background:#f4e0e7}
+.mini-pet-bubble{position:fixed;left:0;top:0;right:auto;bottom:auto;z-index:51;box-sizing:border-box;width:210px;min-width:0;max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);overflow:hidden;margin:0;padding:12px 15px;border:1px solid var(--line,#e5cbd2);border-radius:16px;background:var(--cream,#fffdf8);box-shadow:0 4px 18px #512e3b14;color:var(--ink,#512e3b);font-family:var(--sans,sans-serif);font-size:.75rem;line-height:1.7;pointer-events:none;user-select:none}
+.mini-pet-restore{position:fixed;left:auto;top:auto;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:50;min-width:44px;min-height:44px;padding:10px 14px;border:1px solid var(--line,#e5cbd2);border-radius:99px;background:var(--cream,#fffdf8);font-size:.75rem;color:var(--rose,#9e405b);pointer-events:auto;touch-action:manipulation}
+@media(min-width:761px){.mini-pet{--pet-size:120px}.mini-pet-bubble{font-size:.8125rem;width:220px}.mini-pet-restore{font-size:.8125rem}}
+@media(prefers-reduced-motion:reduce){.mini-pet,.mini-pet *{animation:none!important;transition:none!important}.mini-pet{will-change:auto!important}}
