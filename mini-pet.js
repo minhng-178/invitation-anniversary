@@ -30,14 +30,11 @@
   document.body.append(bubble);
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const names = window.INVITATION || {};
-  const sender = names.senderNickname || "Heo";
-  const recipient = names.recipientNickname || "Bé Hai";
   const messages = [
-    sender + " nhờ Cappy nói: thương " + recipient + " nhiều lắm đó ♡",
+    "Anh nhờ Cappy nói: thương em nhiều lắm đó ♡",
     "Đi chậm thôi, mình còn cả bốn năm thương nhau ✿",
     "Cappy đi dạo. Còn hai đứa mình đi hẹn hò nha ♡",
-    "Một chút sushi, thật nhiều thương " + recipient + ".",
+    "Một chút pizza, thật nhiều thương em.",
     "Năm thứ tư đang đợi thêm một tấm ảnh của hai đứa đó ♡"
   ];
   let position = { x: 0, y: 0 };

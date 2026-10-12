@@ -1,6 +1,11 @@
-/* Progressive enhancement: no selector here conceals pending content. */
+/* Added only after motion.js successfully creates an IntersectionObserver. */
+.invitation-reveal-target {
+  opacity: 0;
+}
+
 .invitation-reveal-active {
-  will-change: opacity, translate, scale;
+  will-change: opacity, translate, scale, rotate;
+  transform-origin: center;
 }
 
 .invitation-press-active {
@@ -8,9 +13,40 @@
   transform-origin: center;
 }
 
+.year-story.is-revealed .year-heart,
+.pending-memory.is-revealed .pending-heart,
+.date-card.is-revealed .card-topline span:last-child {
+  animation: little-heart-arrives 900ms 180ms cubic-bezier(.22,.8,.3,1) both;
+}
+
+.memory-open img {
+  transition: transform 650ms cubic-bezier(.16,1,.3,1);
+}
+
+@keyframes little-heart-arrives {
+  0% { scale: .72; opacity: .25; }
+  55% { scale: 1.16; opacity: 1; }
+  78% { scale: .97; opacity: 1; }
+  100% { scale: 1; opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .invitation-reveal-target {
+    opacity: 1;
+  }
   .invitation-reveal-active,
   .invitation-press-active {
     will-change: auto;
+  }
+}
+
+@media print {
+  .invitation-reveal-target,
+  .invitation-reveal-active {
+    opacity: 1 !important;
+    translate: none !important;
+    scale: none !important;
+    rotate: none !important;
+    animation: none !important;
   }
 }

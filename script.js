@@ -93,6 +93,11 @@
 
   // Text nodes keep the configuration safe to edit; HTML is never interpolated.
   document.querySelectorAll("[data-time]").forEach((element) => { element.textContent = config.time; });
+  document.querySelectorAll("[data-restaurant]").forEach((element) => { element.textContent = config.restaurant; });
+  document.querySelectorAll("[data-address]").forEach((element) => {
+    element.textContent = config.address;
+    element.style.whiteSpace = "pre-line";
+  });
   document.querySelectorAll("[data-map-link]").forEach((element) => { element.href = config.mapUrl; });
   const letterCopy = $("#letter-copy");
   letterCopy.replaceChildren(...config.letter.map((text) => {
@@ -129,9 +134,9 @@
       autoplay: !motionPreference.matches && !document.hidden,
       rendererSettings: { preserveAspectRatio: "xMidYMid meet", progressiveLoad: true },
       animationData: {
-        v: "5.13.0", fr: 30, ip: 0, op: 144, w: 960, h: 960, nm: "Heo & Bé Hai", ddd: 0,
+        v: "5.13.0", fr: 30, ip: 0, op: 144, w: 960, h: 960, nm: "Anh & Em", ddd: 0,
         assets: [{ id: "our-bouquet", w: 960, h: 960, u: "", p: new URL("./assets/bouquet.webp", document.baseURI).href, e: 0 }],
-        layers: [{ ddd: 0, ind: 1, ty: 2, nm: "A bouquet for Bé Hai", refId: "our-bouquet", sr: 1,
+        layers: [{ ddd: 0, ind: 1, ty: 2, nm: "A bouquet for you", refId: "our-bouquet", sr: 1,
           ks: { o: { a: 0, k: 100 }, a: { a: 0, k: [480, 650, 0] },
             p: { a: 1, k: keyframes([[0, [480, 650, 0]], [36, [480, 636, 0]], [72, [480, 650, 0]], [108, [480, 640, 0]], [144, [480, 650, 0]]]) },
             s: { a: 0, k: [97, 97, 100] },
@@ -206,10 +211,7 @@
   });
 
   const flowerMessages = [
-    "Một bó hoa nhỏ, thật nhiều thương em ♡",
-    "Bé Hai mang nụ cười, Heo mang thương em ✿",
-    "Bốn năm rồi, vẫn muốn ngồi sát em xíu!",
-    "Hoa dành cho Bé Hai. Chỗ cạnh Heo cũng vậy ♡"
+    "Tặng em một bó hoa, và trọn gói một đời cưng chiều ♡"
   ];
   let messageIndex = 0;
   $("#bouquet-button").addEventListener("click", (event) => {
@@ -276,7 +278,7 @@
     if (!$("#map-frame iframe")) {
       const frame = document.createElement("iframe");
       frame.src = config.mapEmbed;
-      frame.title = "Bản đồ đến Sushi Miyagi — địa điểm hẹn của Heo và Bé Hai";
+      frame.title = `Bản đồ đến ${config.restaurant} — địa điểm hẹn của 2 đứa`;
       frame.loading = "lazy";
       frame.referrerPolicy = "strict-origin-when-cross-origin";
       frame.allowFullscreen = true;
@@ -285,32 +287,30 @@
     animateUI($("#map-frame"), [{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 300 });
   });
 
-  const acceptMessage = `Heo ơi, Bé Hai nhận lời nha ♡ Hẹn Heo Chủ nhật 18/10/2026 lúc ${config.time} tại ${config.restaurant}. Thương Heo!`;
-  function showReply(mode, trigger) {
-    const accepted = mode === "accept";
-    $("#reply-eyebrow").textContent = accepted ? "HẸN EM, NGƯỜI THƯƠNG" : "MÌNH CHỌN LÚC THẬT THẢNH THƠI";
-    $("#reply-title").textContent = accepted ? "Heo vui quá trời!" : "Giờ nào cũng được, có em là vui.";
-    $("#reply-description").textContent = accepted ? "Vậy mình hẹn nhau tối Chủ nhật nha.\nBé Hai chỉ cần mang theo nụ cười thôi." : "Bé Hai nhắn Heo giờ em thấy tiện nhé.\nChiếc hẹn này vẫn dành riêng cho em.";
-    $("#reply-message").value = accepted ? acceptMessage : "Heo ơi, Bé Hai muốn đổi giờ hẹn ngày 18/10 một chút. Mình bàn lại qua tin nhắn nha ♡";
-    $("#copy-status").textContent = "Sao chép rồi gửi qua tin nhắn cho Heo nhé.";
+  const acceptMessage = `Anh ơi, em nhận lời nha ♡ Hẹn anh Chủ nhật 18/10/2026 lúc ${config.time} tại ${config.restaurant}. Thương anh!`;
+  function showReply(trigger) {
+    $("#reply-eyebrow").textContent = "HẸN EM, NGƯỜI THƯƠNG";
+    $("#reply-title").textContent = "Anh vui quá trời!";
+    $("#reply-description").textContent = "Vậy mình hẹn nhau tối Chủ nhật nha.\nEm chỉ cần mang theo nụ cười thôi.";
+    $("#reply-message").value = acceptMessage;
+    $("#copy-status").textContent = "Sao chép rồi gửi qua tin nhắn cho anh nhé.";
     $("#copy-reply").textContent = "Sao chép lời nhắn ♡";
     openDialog($("#reply-dialog"), trigger);
-    if (accepted) burst(window.innerWidth / 2, window.innerHeight * 0.4, 38);
+    burst(window.innerWidth / 2, window.innerHeight * 0.4, 38);
   }
-  $("#accept-invitation").addEventListener("click", (event) => { showReply("accept", event.currentTarget); });
-  $("#change-time").addEventListener("click", (event) => { showReply("change", event.currentTarget); });
+  $("#accept-invitation").addEventListener("click", (event) => { showReply(event.currentTarget); });
   $("#copy-reply").addEventListener("click", async () => {
     const message = $("#reply-message");
     try {
       if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
       await navigator.clipboard.writeText(message.value);
-      $("#copy-status").textContent = "Đã sao chép. Bé Hai gửi lời nhắn này cho Heo nha ♡";
+      $("#copy-status").textContent = "Đã sao chép. Em gửi lời nhắn này cho anh nha ♡";
       $("#copy-reply").textContent = "Đã sao chép ♡";
       animateUI($("#copy-status"), [{ opacity: 0, transform: "translateY(4px)" }, { opacity: 1, transform: "none" }], { duration: 220 });
     } catch {
       message.focus();
       message.select();
-      $("#copy-status").textContent = "Bé Hai nhấn giữ hoặc dùng Ctrl/Cmd+C để sao chép lời nhắn nhé.";
+      $("#copy-status").textContent = "Em nhấn giữ hoặc dùng Ctrl/Cmd+C để sao chép lời nhắn nhé.";
     }
   });
 

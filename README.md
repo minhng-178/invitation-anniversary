@@ -2,7 +2,7 @@
 
 Thiệp mời của Nguyễn Viết Anh Minh (Heo) dành cho Phan Thị Huyền Trân (Bé Hai), mừng 4 năm bên nhau và dịp 20/10.
 
-**Buổi hẹn:** Chủ nhật **18/10/2026, 19:00**, tại **Sushi Miyagi**.
+**Buổi hẹn:** Chủ nhật **18/10/2026, 19:00**, tại **Pizza 4P’s Lê Đại Hành**, The Emporium, 184 Lê Đại Hành, phường Phú Thọ, TP. Hồ Chí Minh ([Google Maps](https://maps.app.goo.gl/RoQFbRdZiyp7ZG667)).
 
 HTML, CSS, JavaScript thuần. Không cần npm, framework, server backend hay bước build. Lottie 5.13.0 và font tiếng Việt được lưu trong bộ code; website chỉ cần mạng ngoài khi xem Google Maps.
 
@@ -22,12 +22,14 @@ Truy cập `http://localhost:4173`. Có thể mở `index.html` trực tiếp, n
 - Cappy pixel art dùng sprite gốc do chủ website chọn, có animation chạy trái/phải, đứng nghỉ, vẫy tay khi chạm và tư thế nhấc lên khi kéo. Tự đi lại và nghỉ gần mép dưới màn hình. Kéo bằng chuột/cảm ứng, bấm để nghe lời nhắn, thu nhỏ và gọi lại. Khi focus, dùng phím mũi tên để di chuyển; Home đưa Capy về góc trang. Pet dừng khi hover/focus, mở dialog, chuyển tab hoặc bật giảm chuyển động.
 - Hành trình năm 1 → 4: mỗi năm 1–3 có hai ảnh theo đúng thứ tự a → b; năm 4 đang chờ kỷ niệm mới. Không còn số 01/02 dưới ảnh. Trên điện thoại, vuốt ngang để xem ảnh lớn tiếp theo; desktop hiển thị hai ảnh cạnh nhau. Bấm ảnh để xem lớn, dùng mũi tên hoặc bàn phím để chuyển ảnh.
 - Thiệp riêng của Heo trong hộp thư có thể mở/đóng bằng chuột, cảm ứng hoặc bàn phím.
-- Ảnh, thiệp và các phần nội dung hiện nhẹ khi cuộn đến; ảnh kế tiếp trên điện thoại hiện khi vuốt ngang. Nút nhún khi chạm, thư mở/đóng và ảnh chuyển mượt. Animation dùng Web Animations API; nội dung luôn đọc được nếu trình duyệt không hỗ trợ, và tắt chuyển động khi bật `prefers-reduced-motion`.
+- Phần mở đầu xuất hiện lần lượt; các section, thiệp và ảnh hiện dần khi cuộn đến. Ảnh trượt nhẹ, nghiêng và nhún vào vị trí, vẫn giữ góc nghiêng gốc trên desktop; ảnh kế tiếp trên điện thoại chỉ hiện khi vuốt vào khung nhìn. Tim nhỏ nhún một lần tại mỗi mốc kỷ niệm. Nút nhún khi chạm, thư mở/đóng và ảnh chuyển mượt. Animation dùng Web Animations API; nội dung luôn đọc được nếu trình duyệt không hỗ trợ, và tắt chuyển động khi bật `prefers-reduced-motion`.
 - Cursor có bông hoa đi theo và hoa nở khi chạm/bấm; tự tắt khi bật chế độ giảm chuyển động.
 - Nhạc nền hộp nhạc tạm, được tạo bằng Web Audio; **chỉ phát sau khi bấm nút nhạc**. Có nút tắt. Nhạc dừng khi chuyển tab.
 - Đếm ngược đến ngày hẹn theo mốc `2026-10-18T19:00:00+07:00`.
 - Link Google Maps đúng địa chỉ được cung cấp, iframe chỉ được nạp khi mở mục bản đồ.
-- Nút nhận lời hoặc xin đổi giờ. Website tạo lời nhắn để Bé Hai sao chép và tự gửi cho Heo; **không tự gửi hoặc lưu phản hồi lên server**.
+- Địa chỉ Pizza 4P’s lấy theo Maps hiện tại: The Emporium, 184 Lê Đại Hành, phường Phú Thọ, TP. Hồ Chí Minh. Bản đồ nhúng lấy từ mục Share → Embed a map của đúng chi nhánh. `restaurant` và `address` trong `config.js` cập nhật thông tin trên thiệp; thư và metadata có nội dung dự phòng tương ứng trong HTML.
+- Chỉ có nút “Dạ, Bé Hai đi” để nhận lời. Website tạo lời nhắn để Bé Hai sao chép và tự gửi cho Heo; **không tự gửi hoặc lưu phản hồi lên server**.
+- Lời văn trên trang dùng “anh” và “em”; giữ cách gọi riêng ở tiêu đề “Bé Hai ơi…” cùng lời mời “Bé Hai đi cùng Heo nha?” và nút “Dạ, Bé Hai đi”.
 - Giao diện mobile-first: CSS mặc định cho điện thoại, mở rộng bằng `min-width`; nút mở thiệp xuất hiện trước bó hoa trên mobile. Dialog có focus/đóng Escape, hỗ trợ `prefers-reduced-motion`.
 
 ## Sửa lời nhắn và nhạc
@@ -73,6 +75,10 @@ Hướng dẫn chính thức: [GitHub Pages custom workflows](https://docs.githu
 Cappy: lấy mẫu animation trong 23,5 giây, thấy idle/chạy trái/chạy phải và không có frame rỗng. Đã kéo bằng công cụ trình duyệt và mô phỏng thêm PointerEvent touch, kiểm tra chặn click sau kéo, pointercancel, vẫy tay khi bấm liên tiếp, ẩn/hiện, pause/resume, mở/đóng dialog. Không có lỗi hoặc cảnh báo console trong lần kiểm tra này. CSS sprite và file JavaScript đã qua kiểm tra cú pháp.
 
 Animation mới: đã kiểm tra cuộn, vuốt ảnh và chạm nút ở 320/390 px; desktop 1440 px giữ nguyên góc nghiêng của ảnh. Thư đóng/mở liên tiếp không kẹt, trả focus về nút mở, chuyển ảnh nhanh đúng thứ tự và dùng WebP. Đã mô phỏng bật giảm chuyển động giữa lúc đóng thư, cùng trình duyệt thiếu IntersectionObserver/Web Animations API: nội dung và thao tác vẫn hoạt động. Không có lỗi/cảnh báo console; `script.js`, `motion.js` và `mini-pet.js` qua `node --check`.
+
+Điều chỉnh 12/10/2026: kiểm tra địa chỉ, link, iframe và lời nhắn nhận lời tại Pizza 4P’s Lê Đại Hành. Trên màn hình 390 px, đo opacity của thiệp từ 0 → 0.43 trong lúc chạy → 1 sau khi hoàn tất; ảnh thứ hai vẫn ẩn ở mép khung và hiện sau khi vuốt. Đã kiểm tra các section ở 320 px, gallery ở desktop 1440 px, mở thư/xem ảnh/chuyển ảnh/nhận lời và focus vào ảnh chưa hiện. Mô phỏng bật giảm chuyển động giữa animation: toàn bộ nội dung hiện ngay, animation được hủy. Mô phỏng thiếu từng API IntersectionObserver và Web Animations: không có nội dung bị ẩn. Không tràn ngang hoặc lỗi/cảnh báo console trong các lần kiểm tra này.
+
+Tham khảo hiệu ứng: [web.dev — animation hiệu quả với opacity/transform](https://web.dev/articles/animations-guide), [MDN — Intersection Observer](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) và [web.dev — prefers-reduced-motion](https://web.dev/articles/prefers-reduced-motion). Hiệu ứng chỉ chạy một lần khi nội dung vào khung nhìn; `will-change` được gỡ sau khi xong, không thêm thư viện animation.
 
 ## Prompt tạo bó hoa
 

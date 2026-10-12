@@ -2,12 +2,13 @@
   "use strict";
   if (window.InvitationMotion) return;
 
-  const revealSelector = ".section-intro, .date-card, .journey-intro, .year-story, .memory-photo, .pending-memory, .rsvp-section > *";
+  const revealSelector = ".hero-copy > *, .hero-art, .occasion-strip, .section-intro, .date-card, .journey-intro, .year-story, .memory-photo, .pending-memory, .rsvp-section > *, .site-footer";
   const controlSelector = ".button, .music-toggle, .map-link, .photo-toolbar button, .memory-open";
   const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
   const hasAnimation = typeof Element.prototype.animate === "function";
   const hasScale = Boolean(window.CSS && CSS.supports("scale", "1"));
   const hasTranslate = Boolean(window.CSS && CSS.supports("translate", "0 1px"));
+  const hasRotate = Boolean(window.CSS && CSS.supports("rotate", "1deg"));
   const pending = new Set();
   const reveals = new Map();
   const presses = new Map();
@@ -51,13 +52,17 @@
   }
 
   function stagger(element) {
-    if (element.classList.contains("date-card")) return 75;
+    if (element.parentElement.classList.contains("hero-copy")) {
+      return Math.min(320, [...element.parentElement.children].indexOf(element) * 80);
+    }
+    if (element.classList.contains("hero-art")) return 180;
+    if (element.classList.contains("date-card")) return 110;
     if (element.classList.contains("memory-photo")) {
       const siblings = [...element.parentElement.children].filter((sibling) => sibling.classList.contains("memory-photo"));
-      return Math.min(105, siblings.indexOf(element) * 75);
+      return Math.min(140, siblings.indexOf(element) * 140);
     }
     if (element.parentElement.classList.contains("rsvp-section")) {
-      return Math.min(180, [...element.parentElement.children].indexOf(element) * 45);
+      return Math.min(280, [...element.parentElement.children].indexOf(element) * 65);
     }
     return 0;
   }
@@ -68,16 +73,30 @@
     if (preference.matches || !hasAnimation || element.contains(document.activeElement)) return;
     const photo = element.classList.contains("memory-photo");
     const card = photo || element.classList.contains("date-card") || element.classList.contains("pending-memory");
+    const art = element.classList.contains("hero-art");
+    const direction = photo && element === element.parentElement.children[1] ? 1 : -1;
     const from = { opacity: 0 };
+    const near = { opacity: 1, offset: 0.78 };
     const to = { opacity: 1 };
-    if (hasTranslate) { from.translate = "0 14px"; to.translate = "0 0"; }
-    if (hasScale) { from.scale = card ? "0.985" : "1"; to.scale = "1"; }
+    if (hasTranslate) {
+      from.translate = photo ? `${direction * 12}px 28px` : `0 ${art ? 20 : 24}px`;
+      near.translate = card ? "0 -2px" : "0 0";
+      to.translate = "0 0";
+    }
+    if (hasScale) {
+      from.scale = card || art ? "0.96" : "1";
+      near.scale = card ? "1.004" : "1";
+      to.scale = "1";
+    }
+    // Individual transforms preserve the photos' existing desktop tilt.
+    if (photo && hasRotate) { from.rotate = `${direction * 2}deg`; near.rotate = "0deg"; to.rotate = "0deg"; }
     try {
       element.classList.add("invitation-reveal-active");
-      const animation = element.animate([from, to], {
-        duration: photo ? 640 : 560,
+      element.classList.add("is-revealed");
+      const animation = element.animate(card ? [from, near, to] : [from, to], {
+        duration: photo ? 920 : art ? 1000 : card ? 820 : 720,
         delay: stagger(element),
-        easing: "cubic-bezier(.2,.75,.25,1)",
+        easing: "cubic-bezier(.16,1,.3,1)",
         fill: "backwards"
       });
       reveals.set(element, animation);
@@ -267,13 +286,25 @@
   window.addEventListener("pagehide", () => settle());
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) settle();
+    else revealVisible();
   });
+  window.addEventListener("pageshow", revealVisible);
   preference.addEventListener("change", () => {
     if (preference.matches) revealAll();
   });
 
-  // Elements are never hidden while waiting for IO. The animation only conceals
-  // them briefly on first entry; missing APIs always leave ordinary content.
+  function revealVisible() {
+    // Request fresh entries after a hidden tab/bfcache restore. Let IO account
+    // for the galleries' clipping rather than consuming the next peeking photo.
+    if (!observer || document.hidden) return;
+    for (const element of pending) {
+      observer.unobserve(element);
+      observer.observe(element);
+    }
+  }
+
+  // Conceal only after the observer is available. Focus, anchor navigation,
+  // reduced motion, print and missing APIs all retain readable content.
   if (hasAnimation && !preference.matches && "IntersectionObserver" in window) {
     const candidates = [...document.querySelectorAll(revealSelector)].filter((element) => !element.closest("dialog"));
     const candidateSet = new Set(candidates);
@@ -287,10 +318,18 @@
       observer = new IntersectionObserver((entries) => {
         if (document.hidden) return;
         for (const entry of entries) {
-          const threshold = entry.target.classList.contains("memory-photo") ? 0.22 : 0.08;
-          if (entry.isIntersecting && entry.intersectionRatio >= threshold) reveal(entry.target);
+          if (!entry.isIntersecting) continue;
+          const bounds = entry.boundingClientRect;
+          const root = entry.rootBounds;
+          if (!root || !bounds.width || !bounds.height) { reveal(entry.target); continue; }
+          const visibleWidth = entry.intersectionRect.width / Math.min(bounds.width, root.width);
+          const visibleHeight = entry.intersectionRect.height / Math.min(bounds.height, root.height);
+          // A tall photo still reveals on a small/zoomed screen. A peeking
+          // second photo waits until the horizontal swipe brings it into view.
+          const requiredWidth = entry.target.classList.contains("memory-photo") ? 0.4 : 0;
+          if (visibleWidth >= requiredWidth && visibleHeight >= 0.08) reveal(entry.target);
         }
-      }, { root: null, rootMargin: "0px 0px -24px 0px", threshold: [0.08, 0.22] });
+      }, { root: null, rootMargin: "0px 0px -32px 0px", threshold: [0, 0.01, 0.05, 0.1, 0.18, 0.3, 0.5, 0.75, 1] });
       for (const element of topLevel) {
         pending.add(element);
         element.classList.add("invitation-reveal-target");
